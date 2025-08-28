@@ -67,8 +67,8 @@ Installation
 
 Clone the repository:
 
-git clone https://github.com/<your-username>/tech-mill.git
-cd tech-mill
+git clone https://github.com/beardgod7/techmill_test.git
+cd techmill_test
 
 Install dependencies:
 
@@ -76,7 +76,7 @@ npm install
 
 Create a .env file in the root directory (see .env.example) with the following variables:
 
-PORT=5000
+PORT=4000
 DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=your_db_username
@@ -108,7 +108,7 @@ DELETE /api/v1/product/delete/:id Auth User Delete a product
 PATCH /api/v1/product/:id/approve Admin Approve or unapprove a product
 Postman Documentation
 
-Full API documentation is available in the [postman_collection.json file](https://rendezvous-7261.postman.co/workspace/rendezvous-Workspace~2929ce1a-a5b1-4d9b-9484-4074c7e59f6e/collection/24267474-5f7eac74-ad94-49d6-9856-943b102df951?action=share&source=copy-link&creator=24267474).
+Full API documentation is available in the [techmill-test.postman_collection.json file] in docs folder
 
 Includes request schemas, example responses, and authentication setup.
 
