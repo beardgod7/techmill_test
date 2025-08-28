@@ -8,7 +8,6 @@ class AuthService {
   async register({ email, password, role }) {
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) throw new Error("Email already registered");
-
     const hashedPassword = await Userhash.hashPassword(password);
     return userRepository.createUser({ email, password: hashedPassword, role });
   }
@@ -19,21 +18,22 @@ class AuthService {
 
     const valid = await Userhash.comparePassword(password, user.password);
     if (!valid) throw new Error("Invalid credentials");
-
-    const accessToken = tokenService.generateAccessToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
-
-    const refreshToken = tokenService.generateRefreshToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
-
+    const [accessToken, refreshToken] = await Promise.all([
+      tokenService.generateAccessToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      }),
+      tokenService.generateRefreshToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      }),
+    ]);
     const expiresAt = dayjs().add(7, "day").toDate();
-    await tokenRepository.create(refreshToken, user.id, expiresAt);
+    tokenRepository.create(refreshToken, user.id, expiresAt).catch((err) => {
+      console.error("Failed to save refresh token:", err);
+    });
 
     return { user, accessToken, refreshToken };
   }

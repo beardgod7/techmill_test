@@ -19,6 +19,12 @@ class Database {
           },
         },
         logging: false,
+        pool: {
+          max: 20,
+          min: 5,
+          acquire: 30000,
+          idle: 10000,
+        },
       }
     );
   }
@@ -27,9 +33,20 @@ class Database {
     try {
       await this.sequelize.authenticate();
       console.log("✅ Database connected successfully!");
+
+      // Warm up pool immediately
+      await this.warmUpPool(5); // create 5 initial connections
     } catch (error) {
       console.error("❌ Error connecting to the database:", error);
     }
+  }
+
+  async warmUpPool(connections = 5) {
+    const queries = Array.from({ length: connections }, () =>
+      this.sequelize.query("SELECT 1")
+    );
+    await Promise.all(queries);
+    console.log(`🔄 Database pool warmed up with ${connections} connections`);
   }
 
   getInstance() {
@@ -37,7 +54,5 @@ class Database {
   }
 }
 
-// create a single instance (singleton)
 const database = new Database();
-
 export default database;

@@ -10,7 +10,6 @@ class AuthController {
 
       const { email, password, role } = req.body;
       const user = await authService.register({ email, password, role });
-
       const safeUser = {
         id: user.id,
         email: user.email,
