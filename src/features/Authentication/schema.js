@@ -4,7 +4,17 @@ class AuthValidator {
   constructor() {
     this.registerSchema = Joi.object({
       email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
+      password: Joi.string()
+        .pattern(
+          new RegExp(
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?]).{6,}$"
+          )
+        )
+        .required()
+        .messages({
+          "string.pattern.base":
+            "Password must be at least 6 characters long and include uppercase, lowercase, number, and special character",
+        }),
       role: Joi.string().valid("User", "Admin").required(),
     });
 
