@@ -5,6 +5,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import database from "../src/config/dbconfig.js";
 import apiRoutes from "../src/routes/index.js";
+import ErrorHandler from "../src/middleware/ErrorHandler.js";
 dotenv.config();
 export default class App {
   constructor() {
@@ -12,6 +13,7 @@ export default class App {
     this._initializeMiddlewares();
     this._initializeDatabase();
     this._initializeRoutes();
+    this._initializeErrorHandling();
   }
 
   _initializeMiddlewares() {
@@ -24,6 +26,10 @@ export default class App {
 
   async _initializeDatabase() {
     await database.connect();
+  }
+
+  _initializeErrorHandling() {
+    this.app.use(ErrorHandler.handle);
   }
 
   _initializeRoutes() {

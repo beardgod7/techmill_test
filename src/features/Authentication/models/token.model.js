@@ -17,6 +17,11 @@ Token.init(
       allowNull: false,
       unique: true,
     },
+    type: {
+      type: DataTypes.ENUM("access", "refresh"),
+      allowNull: false,
+      defaultValue: "refresh",
+    },
     expiresAt: {
       type: DataTypes.DATE,
       allowNull: false,

@@ -81,6 +81,25 @@ class AuthController {
       res.status(400).json({ message: err.message });
     }
   }
+  async setBanStatus(req, res) {
+    try {
+      const { userId } = req.params;
+      const { isBanned } = req.body;
+
+      if (typeof isBanned !== "boolean") {
+        return res
+          .status(400)
+          .json({ message: "isBanned must be true or false" });
+      }
+
+      await authService.setBanStatus(userId, isBanned);
+      res.status(200).json({
+        message: `User has been ${isBanned ? "banned" : "unbanned"} successfully`,
+      });
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  }
 }
 
 export default new AuthController();

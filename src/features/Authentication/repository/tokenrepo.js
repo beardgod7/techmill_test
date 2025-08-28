@@ -1,20 +1,15 @@
 import Token from "../models/token.model.js";
-
 class TokenRepository {
   async create(token, userId, expiresAt) {
-    return Token.create({ token, userId, expiresAt });
-  }
-
-  async delete(token) {
-    return Token.destroy({ where: { token } });
+    return Token.create({ token, userId, expiresAt, type: "refresh" });
   }
 
   async find(token) {
-    return Token.findOne({ where: { token }, include: "User" });
+    return Token.findOne({ where: { token, type: "refresh" } });
   }
 
-  async deleteAllForUser(userId) {
-    return Token.destroy({ where: { userId } });
+  async delete(token) {
+    return Token.destroy({ where: { token, type: "refresh" } });
   }
 }
 

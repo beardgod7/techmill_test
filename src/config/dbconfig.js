@@ -33,9 +33,7 @@ class Database {
     try {
       await this.sequelize.authenticate();
       console.log("✅ Database connected successfully!");
-
-      // Warm up pool immediately
-      await this.warmUpPool(5); // create 5 initial connections
+      await this.warmUpPool(5);
     } catch (error) {
       console.error("❌ Error connecting to the database:", error);
     }

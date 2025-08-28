@@ -15,25 +15,29 @@ class AuthService {
   async login(email, password) {
     const user = await userRepository.findByEmail(email);
     if (!user) throw new Error("User doesn't exist");
+    if (user.isBanned)
+      throw new Error("Your account is banned. Contact admin.");
 
     const valid = await Userhash.comparePassword(password, user.password);
     if (!valid) throw new Error("Invalid credentials");
+
     const [accessToken, refreshToken] = await Promise.all([
       tokenService.generateAccessToken({
-        id: user.id,
+        sub: user.id,
         email: user.email,
         role: user.role,
       }),
       tokenService.generateRefreshToken({
-        id: user.id,
+        sub: user.id,
         email: user.email,
         role: user.role,
       }),
     ]);
+
     const expiresAt = dayjs().add(7, "day").toDate();
-    tokenRepository.create(refreshToken, user.id, expiresAt).catch((err) => {
-      console.error("Failed to save refresh token:", err);
-    });
+    tokenRepository
+      .create(refreshToken, user.id, expiresAt)
+      .catch(console.error);
 
     return { user, accessToken, refreshToken };
   }
@@ -51,16 +55,19 @@ class AuthService {
     const decoded = tokenService.verifyRefreshToken(oldToken);
     if (!decoded) throw new Error("Invalid or expired refresh token");
 
-    const user = await userRepository.findById(decoded.id);
+    const user = await userRepository.findById(decoded.sub);
     if (!user) throw new Error("User not found");
 
     const accessToken = tokenService.generateAccessToken({
-      id: user.id,
+      sub: user.id,
       email: user.email,
       role: user.role,
     });
 
     return { accessToken };
+  }
+  async setBanStatus(userId, isBanned) {
+    return userRepository.updateBanStatus(userId, isBanned);
   }
 }
 

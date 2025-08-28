@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authController from "./controler.js";
 import LeakyBucketLimiter from "../../middleware/ratelimiter.js";
+import AuthMiddleware from "../../middleware/authentication.js";
 
 class AuthRoutes {
   constructor() {
@@ -17,7 +18,7 @@ class AuthRoutes {
       maxTokens: 10,
       refillRate: 0.5,
     });
-
+    this.authMiddleware = new AuthMiddleware();
     this._initializeRoutes();
   }
 
@@ -38,6 +39,12 @@ class AuthRoutes {
       "/refresh",
       this.refreshLimiter.middleware(),
       authController.refresh
+    );
+    this.router.patch(
+      "/ban/:userId",
+      this.authMiddleware.authenticate(),
+      this.authMiddleware.authorize("Admin"),
+      authController.setBanStatus
     );
   }
 
