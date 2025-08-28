@@ -1,5 +1,3 @@
-"use strict";
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -40,6 +38,7 @@ module.exports = {
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
+    await queryInterface.addIndex("Users", ["email"]);
   },
 
   async down(queryInterface, Sequelize) {

@@ -1,4 +1,4 @@
-import User from "./models/user.model";
+import User from "../models/user.model.js";
 
 class UserRepository {
   async findByEmail(email) {
@@ -9,12 +9,8 @@ class UserRepository {
     return User.findByPk(id);
   }
 
-  async createUser(userData) {
-    return User.create(userData);
-  }
-
-  async save(user) {
-    return user.save();
+  async createUser({ email, password, role }) {
+    return User.create({ email, password, role });
   }
 }
 

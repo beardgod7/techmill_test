@@ -4,12 +4,14 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import database from "../src/config/dbconfig.js";
+import apiRoutes from "../src/routes/index.js";
 dotenv.config();
 export default class App {
   constructor() {
     this.app = express();
     this._initializeMiddlewares();
     this._initializeDatabase();
+    this._initializeRoutes();
   }
 
   _initializeMiddlewares() {
@@ -22,6 +24,10 @@ export default class App {
 
   async _initializeDatabase() {
     await database.connect();
+  }
+
+  _initializeRoutes() {
+    this.app.use("/api/v1", apiRoutes.getRouter());
   }
 
   getExpressInstance() {
