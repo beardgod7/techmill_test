@@ -1,15 +1,15 @@
-import bcrypt from "bcrypt";
 import tokenService from "../../utils/generatetoken.js";
 import userRepository from "./repository/userrepo.js";
 import tokenRepository from "./repository/tokenrepo.js";
 import dayjs from "dayjs";
+import Userhash from "../../utils/bycrpt.js";
 
 class AuthService {
   async register({ email, password, role }) {
     const existingUser = await userRepository.findByEmail(email);
     if (existingUser) throw new Error("Email already registered");
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await Userhash.hashPassword(password);
     return userRepository.createUser({ email, password: hashedPassword, role });
   }
 
@@ -17,7 +17,7 @@ class AuthService {
     const user = await userRepository.findByEmail(email);
     if (!user) throw new Error("User doesn't exist");
 
-    const valid = await bcrypt.compare(password, user.password);
+    const valid = await Userhash.comparePassword(password, user.password);
     if (!valid) throw new Error("Invalid credentials");
 
     const accessToken = tokenService.generateAccessToken({
